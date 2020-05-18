@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 import { FiChevronRight } from 'react-icons/fi';
 import api from '../../services/api';
 
@@ -18,7 +18,24 @@ interface Repository {
 const Dashboard: React.FC = () => {
   const [newRepo, setNewRepo] = useState('');
   const [inputError, setInputError] = useState('');
-  const [repositories, setRepositories] = useState<Repository[]>([]);
+  const [repositories, setRepositories] = useState<Repository[]>(() => {
+    // Lógica para buscar os dados da localStorage e exibir mesmo após F5.
+    const storagedRepositores = localStorage.getItem(
+      '@Githubexplorer:repositories'
+    );
+
+    if (storagedRepositores) {
+      return JSON.parse(storagedRepositores);
+    }
+    return [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem(
+      '@Githubexplorer:repositories',
+      JSON.stringify(repositories)
+    );
+  }, [repositories]);
 
   async function handleAddRepository(
     event: FormEvent<HTMLFormElement>
@@ -48,7 +65,8 @@ const Dashboard: React.FC = () => {
       <img src={logoImg} alt="Github Explorer" />
       <Title>Explore repositórios no Github</Title>
 
-      <Form onSubmit={handleAddRepository}>
+      {/* !! transforma o valor em truthy (booleano truthy ou falsy) */}
+      <Form hasError={!!inputError} onSubmit={handleAddRepository}>
         <input
           value={newRepo}
           onChange={(e) => setNewRepo(e.target.value)}
@@ -57,7 +75,9 @@ const Dashboard: React.FC = () => {
         <button type="submit">Pesquisar</button>
       </Form>
 
-      {/* // if caso o repositório digitado não exista, mostra a mensagem de erro */}
+      {/* // if caso o repositório digitado não exista, mostra a mensagem de
+      erro. O componente Error após o && é exibido apenas se a primeira condiçao
+      (InputError) existir(possuir o conteúdo do try/catch acima). */}
       {inputError && <Error>{inputError}</Error>}
 
       <Repositories>
