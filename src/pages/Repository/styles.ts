@@ -74,6 +74,30 @@ export const RepositoryInfo = styled.section`
       }
     }
   }
+
+  @media(max-width: 400px) {
+    header {
+
+      img {
+        width: 90px;
+        height: 90px;
+      }
+
+      div {
+        strong {
+          font-size: 26px;
+        }
+
+        p {
+          font-size: 16px;
+        }
+      }
+    }
+
+    ul li strong {
+      font-size: 26px;
+    }
+  }
 `;
 
 export const Issues = styled.div`
